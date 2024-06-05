@@ -41,11 +41,17 @@ function ProductPage() {
   };
   // //search Click//
   const handleSearchClick = () => {
+  
     const search = items.filter((item) => item.category.includes(searchValue));
     const search1 = items.filter((itm) =>
       itm.description.includes(searchValue)
     );
     setSearchItems(search);
+    if(firebaseProducts.length>0)
+      {
+        const search3=firebaseProducts.filter((item)=>{item.category.includes(searchValue)||item.description.includes(searchValue)})
+        setSearchItems(...searchItems,search3)
+      }
     if (search1.length > 0) {
       setSearchItems(...searchItems, search1);
       console.log(searchItems);
@@ -240,12 +246,12 @@ function ProductPage() {
                   />
                 ))}
                 {firebaseProducts?.map((item) => (
-                <Product key={item.id}
+                <Product key={item.description}
                 src={item.image}
                 title={item.name}
                 discription={item.description}
                 price={item.price}
-                id={item.description}
+                id={item.id}
                 
                 />
               ))}
@@ -322,7 +328,7 @@ function ProductPage() {
             </div>
           </div>
 
-          <Variants width={300} gridcols={"grid-cols-3"} />
+          <Variants width={300} gridcols={"grid-cols-3"} height={350} />
         </div>
       </div>
     );

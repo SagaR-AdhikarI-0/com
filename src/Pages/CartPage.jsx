@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from "react";
-import Product from "../Components/Product/Product";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Variants from "../Components/TestSkeletton";
-import DeleteIcon from '@mui/icons-material/Delete';
-
+import DeleteIcon from "@mui/icons-material/Delete";
+import { BuyNow as BuyNowComp } from "../Components/BuyNow";
 
 function CartPage() {
   const URL = "https://fakestoreapi.com/products";
   const [items, setItems] = useState([]);
+  const [buyNowClicked, setIsBuyNowClicked] = useState(false);
   const [isloading, setIsloading] = useState(true);
-  const [price,setPrice]=useState(0);
+  const [price, setPrice] = useState(0);
   const [Id, setId] = useState();
+  
+//close buy now function
+const CloseBuyNow=()=>{
+  setIsBuyNowClicked(false);
+}
+
 
   //
   const handleClick = (id) => {
@@ -24,7 +30,6 @@ function CartPage() {
   };
 
   useEffect(() => {
-
     const getItems = JSON.parse(localStorage.getItem("cartItems")) || [];
     if (getItems.length === 0) {
       setIsloading(false);
@@ -48,47 +53,73 @@ function CartPage() {
       };
 
       fetchProducts();
-      {(items.map((item)=>{
-        const price =item.price;
-        const sum=price+item.price
-        setPrice(sum)
-      }))}
-
+      {
+        items.map((item) => {
+          const price = item.price;
+          const sum = price + item.price;
+          setPrice(sum);
+        });
+      }
     }
   }, [handleClick, items]);
   if (items.length > 0) {
-    return (<>
+    return (
+      <div className="bg-slate-50">
+        <div className="grid grid-cols-[3fr,1fr]">
+          <div className="overflow-y-auto">
+            
+            <p className="bg-slate-100 p-7 text-left mx-5 text-2xl font-semibold mt-2">
+              Product Details
+            </p>
+            <div className=" hidden md:block ">
+            <div className="grid grid-cols-4 mt-3 bg-red-50 m-5 p-7 font-semibold text-lg ">
+              <h1 className="w-40  ">Items</h1 > <h1 className="lg:max-w-64">Name</h1> <h1 className="lg:max-w-80 pl-5">Price</h1> <h1 className="max-w-32">Quantity</h1>
+            </div>
+            </div>
+            {items?.map((itm) => (
+              <div
+                key={itm.id}
+                className="flex flex-col lg:flex-row  text-left justify-between lg:m-6  shadow-lg items-center border hover:shadow-2xl bg-slate-100  lg:text-lg font-bold lg:px-6"
+              >
+                <div className="bg-slate-200">
+                  <Link to={`/products/${itm.id}`}>
+                    <img
+                      src={itm.image}
+                      alt=""
+                      className="lg:h-40 lg:w-40 p-5 h-32 w-32"
+                    />
+                  </Link>
+                </div>
+                <div className="lg:max-w-40 text-fuchsia-800 ">
+                  {itm.title}
+                </div>
+                <div className="text-red-500">${itm.price}</div>
+                <div className="text-blue-800">1</div>
+                <div className="w-full lg:w-fit bg-orange-300 hover:bg-orange-400 lg:bg-slate-200">
+                  <DeleteIcon
+                    onClick={() => {
+                      handleClick(itm.id);
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
 
-    {items.map((itm)=>(
-      <div key={itm.title} className="flex flex-col lg:flex-row justify-between lg:m-6 mt-2 shadow-lg items-center border hover:translate-x-3 bg-slate-200  lg:text-lg font-bold lg:px-6">
-        <div className="bg-slate-200">
-          <Link  to={`/products/${itm.id}`}>
-        <img src={itm.image} alt="" className="lg:h-40 lg:w-40 p-5 h-32 w-32"/>
-        </Link>
+          
+          <div className="bg-slate-200 mt-4 p-5 ">
+          <h1 className="text-3xl font-semibold ">SubTotal</h1>
+          <hr />
+            <button
+              className="bg-blue-400 w-full mt-2 lg:w-[30%] hover:bg-blue-500 p-3 rounded-lg text-white"
+              onClick={() => setIsBuyNowClicked(true)}
+            >
+              Buy Now
+            </button>
+          </div>
         </div>
-        <div className="lg:max-w-40 text-fuchsia-800 ">
-          Name:{itm.title}
-        </div>
-        <div className="text-red-500">
-          Price:${itm.price}
-        </div>
-        <div className="text-blue-800">
-        Quantity:1
-        </div>
-        <div className="w-full lg:w-fit bg-orange-300 hover:bg-orange-400 lg:bg-slate-200"  >
-        <DeleteIcon  onClick={()=>{handleClick(itm.id)}}/>
-
-        </div>
-
+        {buyNowClicked && <BuyNowComp setClose={CloseBuyNow} />}
       </div>
-
-    ))}
-    <button className="bg-blue-400 w-full mt-2 lg:w-[30%] hover:bg-blue-500 p-3 rounded-lg text-white">Buy Now</button>
-
-
-
-    
-    </>
 
       // <div className="mt-4 grid">
       // <table>
@@ -121,7 +152,7 @@ function CartPage() {
       //     ))}
       //   </tbody>
       // </table>
-  
+
       // </div>
     );
   } else if (isloading === false) {
@@ -149,9 +180,12 @@ function CartPage() {
       </>
     );
   } else if (isloading) {
-    return <Variants width={620} gridcols={"grid-cols-2"} />;
+    return(
+    <>
+
+     <Variants  width={1000} gridcols={"grid"} height={200}   />
+     </>)
   }
 }
-
 
 export default CartPage;

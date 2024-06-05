@@ -5,10 +5,10 @@ import { Link } from "react-router-dom";
 
 function Product({ title, src, discription, price, id }) {
   const [ishovered, setIsHovered] = useState();
-  const handleAddToCart = ({ id }) => {
+  const handleAddToCart = () => {
     try {
       const existingCartItemsId = JSON.parse(
-        localStorage.getItem("cartItems") || []
+        localStorage.getItem("cartItems") || "[]"
       );
       if (!existingCartItemsId.includes(id)) {
         const updatedCartItemsId = [...existingCartItemsId, id];

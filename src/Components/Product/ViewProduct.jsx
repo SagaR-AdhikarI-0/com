@@ -65,7 +65,7 @@ function ViewProduct() {
         fetchdata();
       } else {
         setItem(null)
-       const  filtered=fireBaseItems.filter((item)=>item.description ===id)
+       const  filtered=fireBaseItems.filter((item)=>item.id ===id)
        const ObjectFiltered=filtered[0];
        setItem(ObjectFiltered)
       }

@@ -4,6 +4,8 @@ import { addDoc, collection } from "firebase/firestore";
 import { fireDb, imageDb } from "../../../Firebase/Firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { v4 } from "uuid";
+import { nanoid } from "@reduxjs/toolkit";
+
 
 function AddCard({ position, onClose }) {
   const [selectedImageFile, setSelectedImageFile] = useState(null);
@@ -47,7 +49,8 @@ function AddCard({ position, onClose }) {
           image: imageUrl, // Save the download URL
           price: data.price,
           description: data.description,
-          category:data.category
+          category:data.category,
+          id:nanoid()
         }).then(()=>setIsloading(false))
         console.log("Document successfully written!");
       }

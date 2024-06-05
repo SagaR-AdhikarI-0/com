@@ -6,13 +6,16 @@ import { Link, NavLink } from "react-router-dom";
 import Cart from "../Components/Cart";
 import SearchIcon from "@mui/icons-material/Search";
 import Variants from "../Components/TestSkeletton";
-
+import { collection,getDocs
+ } from "firebase/firestore";
+ import { fireDb } from "../../Firebase/Firebase";
 function ProductPage() {
   const [items, setItems] = useState([]);
   const [btnClicked, setbtnClicked] = useState(false);
   const [selectedCatagory, setSelectedCatogery] = useState();
   const [searchValue, setSearchValue] = useState("");
   const [isloading, setIsloading] = useState(true);
+  const [firebaseProducts, setFirebaseProducts] = useState([]);
   const [localItem, setlocalItems] = useState([]);
   const getLoc = JSON.parse(localStorage.getItem("cartItems")) || [];
   const [searchItems, setSearchItems] = useState([]);
@@ -99,6 +102,18 @@ function ProductPage() {
       //
     }
   }, [btnClicked, searchItems, selectedCatagory, localItem]);
+  useEffect(() => {
+    const getDataFromFireBase = async () => {
+      const valRef = collection(fireDb, "product");
+      const data = await getDocs(valRef);
+      const alldata = data.docs.map((val) => ({ ...val.data(), id: val.id }));
+      setFirebaseProducts(alldata);
+      console.log(alldata);
+      console.log(data);
+    };
+    getDataFromFireBase()
+  }, []);
+
   if (!isloading) {
     return (
       <div>
@@ -155,11 +170,14 @@ function ProductPage() {
                   ))}
                 </div>
                 <div className="lg:hidden ">
-                  
                   <label htmlFor="catagory" className="">
                     Select Catagory:
                   </label>
-                  <select name="caatagory" id="" className="p-1 bg-none bg-blue-200 rounded ml-2">
+                  <select
+                    name="caatagory"
+                    id=""
+                    className="p-1 bg-none bg-blue-200 rounded ml-2"
+                  >
                     <option
                       value="All"
                       onClick={() => {
@@ -181,8 +199,6 @@ function ProductPage() {
                       </option>
                     ))}
                   </select>
-                  
-                  
                 </div>
                 {/* <div className="pt-5 flex flex-col">
                   <h1 className="text-lg font-bold text-left mx-14">Search By order</h1>
@@ -199,6 +215,9 @@ function ProductPage() {
           </div>
 
           <div className="grid lg:grid-cols-3">
+            
+              
+
             {!searchItems.length > 0
               ? items.map((a) => (
                   <Product
@@ -220,8 +239,20 @@ function ProductPage() {
                     id={a.id}
                   />
                 ))}
+                {firebaseProducts?.map((item) => (
+                <Product key={item.id}
+                src={item.image}
+                title={item.name}
+                discription={item.description}
+                price={item.price}
+                id={item.description}
+                
+                />
+              ))}
+            
           </div>
         </div>
+        {/* <ToastDestructive/> */}
       </div>
     );
   } else if (isloading === true) {

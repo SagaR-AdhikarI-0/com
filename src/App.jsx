@@ -15,7 +15,7 @@ function App() {
     if (items === null) {
       localStorage.setItem("cartItems", JSON.stringify([]));
     }
-  }, [islogin]);
+  }, []);
   const [count, setCount] = useState(0);
 
     return (
@@ -23,7 +23,7 @@ function App() {
       <>
         <Header />
 
-       {islogin? <Outlet />:<SignupForm/>}
+       {islogin?<Outlet />:<SignupForm/>}
         <Footer />
       </>
     );

@@ -11,6 +11,10 @@ import HomePage from "./Pages/HomePage.jsx";
 import CartPage from "./Pages/CartPage.jsx";
 import ViewProduct from "./Components/Product/ViewProduct.jsx";
 import ContactPage from "./Pages/ContactPage.jsx";
+import AdminHomePage from "./Admin Component/AdminHomePage.jsx";
+import Dashboard from "./Admin Component/Home/Dashboard.jsx";
+import AddNewItem from "./Admin Component/AddNewItem/AddNewItem.jsx";
+
 
 const router = createBrowserRouter([
   {
@@ -44,10 +48,25 @@ const router = createBrowserRouter([
       {
         path:'login',
         element:<SignupForm/> 
-      }
+      },
+    
      
     ],
   
+  },
+  {
+    path:'admin',
+    element:<AdminHomePage/>,
+    children:[
+      {
+        path:'',
+        element:<Dashboard/>
+      },
+      {
+        path:'addnewItem',
+        element:<AddNewItem/>
+      }
+    ]
   },
 
 

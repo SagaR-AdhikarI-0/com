@@ -4,6 +4,8 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { app } from "../../../Firebase/Firebase";
 import { useSelector, useDispatch } from "react-redux";
 import { signup } from "../../Features/Authentication/Auth";
+import { fireDb } from "../../../Firebase/Firebase";
+import { addDoc, collection } from "firebase/firestore";
 function SignupForm() {
   const dispatch = useDispatch();
   const auth = getAuth();
@@ -12,17 +14,33 @@ function SignupForm() {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data, event) => {
+  const onSubmit =  (data, event) => {
+   
+    
     if (event.nativeEvent.submitter.value === "Signup") {
+      const userRefrence =collection(fireDb,'user');
+      addDoc(userRefrence,{
+        email:data.email,
+        password:data.password
+
+      })
+
+
       createUserWithEmailAndPassword(auth, data.email, data.password).then(
         (userCredential) => {
-          
           const user = userCredential.user;
           dispatch(signup());
         }
+
+
       );
     }
   };
+
+
+
+  //creating the user refrence
+  
   return (
     <div className="lg:mt-[30vh] bg-slate-100 shadow-2xl flex justify-center ">
       <form

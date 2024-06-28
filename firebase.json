@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "public",
+    "public": "ecom",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -14,4 +14,3 @@
     ]
   }
 }
-

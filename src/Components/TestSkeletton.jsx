@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack';
 
 export default function Variants({width,gridcols,height}) {
   return (
-    <div className={`grid ${gridcols} mt-7 ml-16`}>
+    <div className={`grid ${gridcols} m-5 mt-10`}>
     <Stack spacing={3} >
       {/* For variant="text", adjust the height via font-size */}    
       {/* For other variants, adjust the size with `width` and `height` */}

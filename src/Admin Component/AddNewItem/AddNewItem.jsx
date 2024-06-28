@@ -25,11 +25,6 @@ function AddNewItem() {
   const onClose = () => {
     setBtnClk(false);
   };
-  useEffect(() => {
-    axios.get("https://fakestoreapi.com/products").then((response) => {
-      setItems(response.data);
-    });
-  }, []);
 
   //get data from firebase
   const getDataFromFireBase = async () => {
@@ -39,23 +34,6 @@ function AddNewItem() {
     setGetAllProducts(alldata);
     console.log(alldata);
     console.log(data);
-  };
-  // view Single Product
-  const onClickEye = (id) => {
-    try {
-      const fetchdata = async () => {
-        const response = await axios.get(
-          `https://fakestoreapi.com/products/${id}`
-        );
-        setViewItem(response.data);
-        setIsBlur(true);
-
-        console.log(response.data);
-      };
-      fetchdata();
-    } catch (error) {
-      throw error;
-    }
   };
 
   //close button on the Single product view
@@ -84,17 +62,17 @@ function AddNewItem() {
   return(
     <div>
       {btnClk ? (
-        <AddCard position="fixed top-1  left-[35vw]" onClose={onClose} />
+        <AddCard position="fixed top-10 left-[24vw]" onClose={onClose} />
       ) : (
         ""
       )}
 
       <div>
-        <div className="flex justify-between items-center p-2 bg-slate-50 mb-3">
-          <span className=" from-neutral-700 border text-4xl  p-3 text-left  ">
+        <div className="flex justify-between items-center p-2 bg-slate-50 mb-3 mt-3">
+          <div className=" from-neutral-700 text-3xl  p-3 text-left   ">
             {" "}
             Recently Added Items{" "}
-          </span>
+          </div>
 
           <span>
             <span className="m-10">
@@ -116,22 +94,23 @@ function AddNewItem() {
 
         {/* Recently added Items */}
         <div
-          className={` grid lg:grid-cols-5  justify-start  border gap-10 bg-blue-50 p-5 ${
+          className={` grid lg:grid-cols-5  justify-start  bg-green-50 gap-10  p-5 ${
             btnClk || isBlur ? "blur-[2px] opacity-80" : ""
           }`}
         >
           {getAllProducts.slice(0, 5).map((item) => (
-            <div key={item.id} className=" shadow-lg p-4 bg-white rounded-lg ">
-              <div>
-                <img src={item.image} alt="" className=" h-60 w-60 p-4" />
+            <div key={item.id} className="  ">
+              <div className=" bg-white rounded-lg ">
+                <img src={item.image} alt="" className=" h-60 w-60 rounded-xl " />
               </div>
-              <h1>{item.name}</h1>
+              <h1 className="mt-4 text-2xl font-bold text-yellow-700">{item.name}</h1>
+              <h1 className="">Rs.{item.price}</h1>
             </div>
           ))}
         </div>
 
         <div
-          className={`flex items-center gap-20 text-lg mt-4 bg-slate-100 p-4 ${
+          className={`flex items-center gap-20 text-lg mt-4 bg-teal-50 p-4 ${
             btnClk || isBlur ? "blur-[2px]" : ""
           }`}
         >
@@ -139,7 +118,7 @@ function AddNewItem() {
             <span>All Products |</span>
           </div>
           <span className="font-semibold p-2">
-            Total Products:({items.length + getAllProducts.length})
+            Total Products:({ getAllProducts.length})
           </span>
           <div>
             Search By:
@@ -154,7 +133,7 @@ function AddNewItem() {
 
         {/* table  */}
         <table
-          className={`w-full bg-blue-50 mt-2  ${
+          className={`w-full  mt-2  ${
             btnClk || isBlur ? "blur-[2px]" : ""
           }`}
         >

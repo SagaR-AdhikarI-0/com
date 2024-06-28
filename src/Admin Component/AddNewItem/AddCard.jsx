@@ -4,12 +4,11 @@ import { addDoc, collection } from "firebase/firestore";
 import { fireDb, imageDb } from "../../../Firebase/Firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { v4 } from "uuid";
-import { nanoid } from "@reduxjs/toolkit";
-
+import { nanoid } from 'nanoid'
 
 function AddCard({ position, onClose }) {
   const [selectedImageFile, setSelectedImageFile] = useState(null);
-  const [loading,setIsloading]=useState(false);
+  const [loading, setIsloading] = useState(false);
   const [image, setSelectedImage] = useState(
     "https://img.freepik.com/free-vector/images-concept-illustration_114360-298.jpg?t=st=1717405640~exp=1717409240~hmac=80cecf3d39514d0098c55270ba9cc23b10302a05c7dc5300152ae5fe32fd559b&w=1380"
   );
@@ -40,8 +39,8 @@ function AddCard({ position, onClose }) {
       if (selectedImageFile) {
         const imageRef = ref(imageDb, `file/${v4()}`);
         await uploadBytes(imageRef, selectedImageFile); // Upload the file, not the URL
-       
-        const imageUrl = await getDownloadURL(imageRef) // Get the download URL of the uploaded image
+
+        const imageUrl = await getDownloadURL(imageRef); // Get the download URL of the uploaded image
 
         const productReference = collection(fireDb, "product");
         await addDoc(productReference, {
@@ -49,9 +48,10 @@ function AddCard({ position, onClose }) {
           image: imageUrl, // Save the download URL
           price: data.price,
           description: data.description,
-          category:data.category,
-          id:nanoid()
-        }).then(()=>setIsloading(false))
+          category: data.category,
+          id:nanoid(),
+          date:Date.now(),
+        }).then(() => setIsloading(false));
         console.log("Document successfully written!");
       }
     } catch (error) {
@@ -65,10 +65,10 @@ function AddCard({ position, onClose }) {
 
   return (
     <div
-      className={`${position}  overflow-auto shadow-2xl shadow-green-900 border-slate-400 border-2 rounded-2xl max-w-[600px]  bg-slate-200 p-10 z-40   text-lg text-left  `}
+      className={`${position}  overflow-scroll  h-[92vh] shadow-2xl shadow-green-900 border-black border-2  lg:w-[900px] bg-slate-100 p-10 z-40   text-lg text-left  `}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className=" border flex justify-center rounded-lg h-60  m-2">
+        <div className=" border flex justify-center rounded-lg h-96  m-2">
           <img
             src={image}
             className="h-full w-full rounded-lg border-black border"
@@ -106,32 +106,49 @@ function AddCard({ position, onClose }) {
             required
           />
         </div>
-        <div className="grid grid-cols-2">
-        <div className="grid m-2">
-          <label htmlFor="Price" className="font-bold ">
-            Price
-          </label>
-          <input
-            type="Number"
-            placeholder="Enter the price"
-            {...register("price")}
-            className="p-3 rounded-lg border border-slate-300"
-            required
-          />
+        <div className="grid gap-10 grid-cols-2">
+          <div className="grid my-2">
+            <label htmlFor="Price" className="font-bold ">
+              Price
+            </label>
+            <input
+              type="Number"
+              placeholder="Enter the price"
+              {...register("price")}
+              className="p-3 rounded-lg border border-slate-300"
+              required
+            />
+          </div>
+          <div className="grid my-2 ">
+            <label htmlFor="Price" className="font-bold ">
+              Discount %
+            </label>
+            <input
+              type="number"
+              placeholder="Enter the discount%"
+              {...register("discount")}
+              className="p-3 rounded-lg border border-slate-300"
+              required
+            />
+          </div>
         </div>
-        <div className="grid m-2 ">
-          <label htmlFor="Price" className="font-bold ">
-            Category
-          </label>
-          <input
-            type="text"
-            placeholder="Enter the catagory"
-            {...register("category")}
-            className="p-3 rounded-lg border border-slate-300"
-            required
-          />
-        </div>
-        </div>
+        <div className="grid grid-cols-2 my-2">
+          <div className="grid">
+            <label htmlFor="Price" className="font-bold ">
+              Category
+            </label>
+            <input
+              type="text"
+              placeholder="Enter the price"
+              {...register("category")}
+              className="p-3 rounded-lg border border-slate-300"
+              required
+            />
+            </div>
+            <div>
+
+            </div>
+          </div>
 
         <div className="grid m-2 ">
           <label htmlFor="Description" className="font-bold ">
@@ -162,7 +179,10 @@ function AddCard({ position, onClose }) {
             Close
           </button>
         </div>
-       <div className=" top-[50%] right-[50%]"> {loading?<h1>Loading</h1>:null}</div>
+        <div className=" top-[50%] right-[50%]">
+          {" "}
+          {loading ? <h1>Loading</h1> : null}
+        </div>
       </form>
     </div>
   );

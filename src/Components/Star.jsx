@@ -20,7 +20,7 @@ const StarRating = ({ totalStars = 5 }) => {
             />
             <svg
               className={`h-8 w-8 cursor-pointer transition-colors duration-200 ${
-                ratingValue <= (hover || rating) ? 'text-yellow-500' : 'text-gray-400'
+                ratingValue <= (hover || rating) ? 'text-yellow-400 shadow-yellow-400' : 'text-gray-400'
               }`}
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"

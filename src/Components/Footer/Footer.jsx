@@ -2,14 +2,19 @@ import React from "react";
 
 function Footer() {
   return (
-    <div className="mt-4">
-      <div className="bg-teal-200 text-black grid grid-cols-2 lg:grid-cols-[3fr,2fr,2fr,2fr] place-content-start p-4 z-100 border-t-2 border-black ">
-        <div className="lg:flex lg:px-20 my-auto text-6xl ">Logo</div>
+    <div className="">
+      <div className="bg-[#f0f0f0]  text-black grid grid-cols-2 lg:grid-cols-[3fr,2fr,2fr,2fr] place-content-start py-16 pt-20 z-100  ">
+        <div className=" lg:px-20 my-auto text-6xl font-bold text-left px-3">Logo
+          <p className="text-lg  font-normal p-3 mt-4 text-[#979797]">
+            We hav the best products and the best costumer services
+          </p>
+          
+        </div>
         <div className="grid">
-          <h1 className="text-lg text-black lg:text-left underline font-bold">
+          <h1 className="text-lg lg:text-left underline font-bold">
             Our Services
           </h1>
-          <ul className="lg:text-left">
+          <ul className="lg:text-left text-[#979797]">
             <li>Quality products</li>
             <li>Satisfying</li>
             <li>Fast Services</li>
@@ -18,8 +23,8 @@ function Footer() {
           </ul>
         </div>
         <div className="mt-4 lg:mt-0"> 
-          <h1 className="font-bold text-lg">Products</h1>
-          <ul>
+          <h1 className="font-bold text-xl underline">Products</h1>
+          <ul className="p-4 text-[#979797]">
             <li>Men's Fashion</li>
             <li>Women's Fashion</li>
             <li>Electronics</li>
@@ -28,8 +33,8 @@ function Footer() {
         </div>
 
         <div>
-          <h1> Branches</h1>
-          <ul>
+          <h1 className="underline text-xl font-bold"> Branches</h1>
+          <ul className="p-4 text-[#979797]">
             <li>Lalitpur</li>
             <li>Kathmandu</li>
             <li>Pokhara</li>

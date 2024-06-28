@@ -7,7 +7,7 @@ export const navitems=[{
 },
 {
     id:2,
-    name:"Products",
+    name:"Shop",
     path:'products',
     hidden:"hidden",
 },

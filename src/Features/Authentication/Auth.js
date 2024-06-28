@@ -2,11 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 export const authSlice=createSlice({
     name:"auth",
     initialState:{
-        login:true,
+        login: JSON.parse(localStorage.getItem('loginStatus')),
+        isAdmin:JSON.parse(localStorage.getItem("isAdmin")),
     },
     reducers:{
-        signup:(state)=>{
+        signup:(state,action)=>{
             state.login=true;
+           
 
         },
         logOut:(state)=>{

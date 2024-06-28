@@ -3,10 +3,10 @@ export const  cartSlice=createSlice({
     name:"cart",
     initialState:
     {
-        items:[]
+        items:JSON.parse(localStorage.getItem("cartItems")||[])
     },
     reducers:{
-        electronics:(state)=>{}
+        addTocart:(state,action)=>{state.items.push(action.payload)}
     }
 })
 export const {addTocart}=cartSlice.actions

@@ -1,30 +1,54 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { all } from "axios";
 import { Link } from "react-router-dom";
 import Variants from "../Components/TestSkeletton";
+import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { BuyNow as BuyNowComp } from "../Components/BuyNow";
+import { fireDb } from "../../Firebase/Firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 function CartPage() {
   const URL = "https://fakestoreapi.com/products";
+  const [blur, setBlur] = useState(false);
   const [items, setItems] = useState([]);
   const [buyNowClicked, setIsBuyNowClicked] = useState(false);
   const [isloading, setIsloading] = useState(true);
   const [price, setPrice] = useState(0);
   const [Id, setId] = useState();
-  
-//close buy now function
-const CloseBuyNow=()=>{
-  setIsBuyNowClicked(false);
-}
+  const [selectedItems, setSelectedItems] = useState([]);
+  //for checkbox for the selecting the item which to buy
+  const [checked, setChecked] = useState(false);
 
+  //close buy now function
+  const CloseBuyNow = () => {
+    setIsBuyNowClicked(false);
+    setBlur(false);
+    document.body.style.overflow='auto'
+  };
+  const handelBuyNowButtonClicked=()=>{
+    setIsBuyNowClicked(true);
+    setBlur(true);
+    document.body.style.overflow='hidden'
+  }
 
-  //
+  const handleCheckboxChange = (id) => {
+    setSelectedItems((prevSelectedItems) => {
+      const index = prevSelectedItems.indexOf(id);
+      if (index === -1) {
+        return [...prevSelectedItems, id];
+      } else {
+        return prevSelectedItems.filter((itemId) => itemId !== id);
+      }
+    });
+  };
+
   const handleClick = (id) => {
     const localstorageItems = JSON.parse(localStorage.getItem("cartItems"));
     const filteredItems = localstorageItems.filter((itemId) => itemId !== id);
     localStorage.setItem("cartItems", JSON.stringify(filteredItems));
     setId(localstorageItems);
+    setItems((prevItems) => prevItems.filter((item) => item.id !== id));
 
     console.log(localstorageItems);
   };
@@ -35,125 +59,201 @@ const CloseBuyNow=()=>{
       setIsloading(false);
     }
     if (getItems.length > 0) {
-      const fetchProducts = async () => {
-        try {
-          const responses = await Promise.all(
-            getItems.map((id) =>
-              axios.get(`https://fakestoreapi.com/products/${id}`)
-            )
+      try {
+        const getDataFromFireBase = async () => {
+          const valRef = collection(fireDb, "product");
+          const data = await getDocs(valRef);
+          const alldata = data.docs.map((val) => ({
+            ...val.data(),
+            id: val.id,
+          }));
+          const filteredProducts = alldata.filter((all) =>
+            getItems.includes(all.id)
           );
-          const products = responses.map((response) => response.data);
-          setItems(products);
+          console.log(filteredProducts);
+          setItems(filteredProducts);
+          console.log(alldata);
+          console.log(data);
           setIsloading(false);
-
-          // console.log(products);
-        } catch (error) {
-          console.error("Error fetching products", error);
-        }
-      };
-
-      fetchProducts();
-      {
-        items.map((item) => {
-          const price = item.price;
-          const sum = price + item.price;
-          setPrice(sum);
-        });
+        };
+        getDataFromFireBase();
+      } catch (error) {
+        console.error("Error fetching products", error);
       }
     }
-  }, [handleClick, items]);
+  }, [blur]);
+
+  let total= 0
+  useEffect(() => {
+  
+    items.map((item) => {
+     
+       total= total + Number(item.price);
+      setPrice(total);
+      console.log(total);
+      
+    });
+  }, [items.length])
   if (items.length > 0) {
     return (
-      <div className="bg-slate-50">
-        <div className="grid grid-cols-[3fr,1fr]">
-          <div className="overflow-y-auto">
-            
-            <p className="bg-slate-100 p-7 text-left mx-5 text-2xl font-semibold mt-2">
+      <div>
+        <div className={` grid lg:m-7 ${blur ? "blur-sm" : null}`}>
+          <div className=" hidden lg:block overflow-y-auto">
+            <div className="  text-left mx-5 text-4xl font-bold mt-2 p-12">
               Product Details
-            </p>
-            <div className=" hidden md:block ">
-            <div className="grid grid-cols-4 mt-3 bg-red-50 m-5 p-7 font-semibold text-lg ">
-              <h1 className="w-40  ">Items</h1 > <h1 className="lg:max-w-64">Name</h1> <h1 className="lg:max-w-80 pl-5">Price</h1> <h1 className="max-w-32">Quantity</h1>
-            </div>
-            </div>
-            {items?.map((itm) => (
-              <div
-                key={itm.id}
-                className="flex flex-col lg:flex-row  text-left justify-between lg:m-6  shadow-lg items-center border hover:shadow-2xl bg-slate-100  lg:text-lg font-bold lg:px-6"
-              >
-                <div className="bg-slate-200">
-                  <Link to={`/products/${itm.id}`}>
-                    <img
-                      src={itm.image}
-                      alt=""
-                      className="lg:h-40 lg:w-40 p-5 h-32 w-32"
-                    />
-                  </Link>
-                </div>
-                <div className="lg:max-w-40 text-fuchsia-800 ">
-                  {itm.title}
-                </div>
-                <div className="text-red-500">${itm.price}</div>
-                <div className="text-blue-800">1</div>
-                <div className="w-full lg:w-fit bg-orange-300 hover:bg-orange-400 lg:bg-slate-200">
-                  <DeleteIcon
-                    onClick={() => {
-                      handleClick(itm.id);
-                    }}
-                  />
+              <div className="text-lg font-semibold mt-3 flex justify-between items-center">
+                <h2> Selected:{selectedItems.length}</h2>{" "}
+                <div className="font-semibold text-slate-700">
+                  {" "}
+                  Total ({items.length})
                 </div>
               </div>
-            ))}
+            </div>
+
+            <table className="m-auto text-lg">
+              <thead className="border shadow-md">
+                <tr className="w-full font-semibold bg-red-200">
+                  <td className="py-5 px-20">Select</td>
+                  <td className="py-5 px-20">Items</td>
+                  <td className="py-5 px-20">Name</td>
+                  <td className="py-5 px-20">Price</td>
+                  <td className="py-5 px-20">Quantity</td>
+                  <td className="py-5 px-20">Delete</td>
+                </tr>
+              </thead>
+              <tbody className="mt-4 bg-stone-100">
+                {items.map((item) => (
+                  <tr key={item.id} className="border shadow-md ">
+                    <td>
+                      {" "}
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.includes(item.id)}
+                        onChange={() => handleCheckboxChange(item.id)}
+                      />
+                    </td>
+                    <td>
+                      <Link to={`/products/${item.id}`}>
+                        <img
+                          src={item.image}
+                          alt=""
+                          className="lg:h-40 lg:w-40 p-5 h-28 w-32"
+                        />
+                      </Link>
+                    </td>
+                    <td className="max-w-60">{item.name}</td>
+                    <td>Rs.{item.price}</td>
+                    <td>
+                      <input
+                        type="number"
+                        className="w-20  py-3 border border-black px-3 rounded-sm"
+                        defaultValue={1}
+                      />
+                    </td>
+                    <td>
+                      <DeleteIcon
+                        fontSize="medium"
+                        className="hover:text-red-700 text-blue-700"
+                        onClick={() => {
+                          handleClick(item.id);
+                        }}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
-          
-          <div className="bg-slate-200 mt-4 p-5 ">
-          <h1 className="text-3xl font-semibold ">SubTotal</h1>
-          <hr />
-            <button
-              className="bg-blue-400 w-full mt-2 lg:w-[30%] hover:bg-blue-500 p-3 rounded-lg text-white"
-              onClick={() => setIsBuyNowClicked(true)}
-            >
-              Buy Now
-            </button>
+          {/* for mobile */}
+          <div className="block lg:hidden ">
+            {items.map((item) => (
+              <div className="flex  gap-4   p-2 border-y my-3" key={item.id}>
+                <input type="checkbox" onChange={handleCheckboxChange}  />
+                <div className="place-content-center">
+                  <img src={item.image} alt="" className="h-full w-44 " />
+                </div>
+                <div className="grid w-full gap-2 text-start text-[#989797]">
+                  <h1 className="text-lg text-black">
+                    {item.name.length > 200
+                      ? item.name.substring(0, 200)
+                      : item.name}
+                  </h1>
+
+                  <p className="text-sm ">{item.description}</p>
+                  <h1 className="text-sm ">Category:{item.category}</h1>
+                  <div className="flex justify-between ">
+                    <h1 className="text-red-600">Rs.{item.price}</h1>
+                    <input
+                      type="number"
+                      className="w-20  border px-1"
+                      defaultValue={1}
+                    />
+                  </div>
+                </div>
+                <CloseIcon    onClick={() => {
+                          handleClick(item.id);
+                        }} className="absolute  right-2  " fontSize="small"/>
+              </div>
+            ))}
+        
+
+          </div>
+
+          {/* for small device's checkout button */}
+
+          <div className="sticky bottom-32  lg:hidden">
+            <div className=" bg-white py-4 ">
+              <div className="mt-4 flex  justify-evenly items-center">
+                <div className="">
+                  {/* <span className="">Total: <h1 className="text-lg text-red-600">Rs.{price}</h1></span> */}
+                  Total Items :({selectedItems.length})
+                </div>
+                
+            
+                <button
+                  className="    bg-red-600 hover:bg-red-700 p-3 rounded-lg px-7 m-4  text-white text-lg"
+                  onClick={handelBuyNowButtonClicked}
+                >
+                  Check out
+                </button>
+                
+
+              </div>
+            </div>
+          </div>
+
+          {/* for large devices checkout button */}
+
+          <div className="lg:sticky hidden lg:block bottom-0 bg-white py-4">
+            <div className="mt-4 lg:p-5 flex  lg:justify-end  lg:mx-20">
+              <Link
+                to="/products"
+                className="flex px-10 text-xl text-blue-700 font-semibold hover:text-red-400 mt-4 items-center"
+              >
+                {" "}
+                Continue Shopping{" "}
+              </Link>
+              <button
+                className=" w-full mt-2 lg:w-[30%] bg-red-600 hover:bg-red-700 p-3  text-white text-lg"
+                onClick={handelBuyNowButtonClicked}
+              >
+                Buy Now
+              </button>
+            </div>
           </div>
         </div>
-        {buyNowClicked && <BuyNowComp setClose={CloseBuyNow} />}
+        {buyNowClicked && (
+          <BuyNowComp setClose={CloseBuyNow} SendId={selectedItems} />
+        )}
       </div>
-
-      // <div className="mt-4 grid">
-      // <table>
-      //   <thead className="p-6">
-      //     <tr className="p-6 shadoe-lg">
-      //       <th className="p-6  ">Items</th>
-      //       <th className="p-6 ">Name</th>
-      //       <th className="p-6 ">Pr6ce</th>
-      //       <th className="p-6 ">Quantity</th>
-      //     </tr>
-      //   </thead>
-      //   <tbody className="">
-      //     {items.map((item) => (
-      //       <tr className=" bg-slate-200 gap-3  border-white border-t-2 ">
-      //         <td className="border-t-2 border-white p-8">
-      //           <div>
-      //             <img
-      //               src={item.image}
-      //               alt="item"
-      //               className="h-20 bg-blend-multiply"
-      //             />
-      //           </div>
-      //         </td>
-      //         <td className=" ">{item.title}</td>
-      //         <td className=" ">
-      //           <h1>${item.price}</h1>
-      //         </td>
-      //         <td className="">1</td>
-      //       </tr>
-      //     ))}
-      //   </tbody>
-      // </table>
-
-      // </div>
+    );
+  } else if (isloading) {
+    return (
+      <div>
+        <Variants width={2000} gridcols={"grid hidden lg:block "} height={200} />
+        <Variants width={400} gridcols={'grid lg:hidden'} height={150}/>
+      </div>
     );
   } else if (isloading === false) {
     return (
@@ -179,12 +279,6 @@ const CloseBuyNow=()=>{
         </Link>
       </>
     );
-  } else if (isloading) {
-    return(
-    <>
-
-     <Variants  width={1000} gridcols={"grid"} height={200}   />
-     </>)
   }
 }
 

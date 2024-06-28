@@ -51,24 +51,10 @@ function ViewProduct() {
 
   useEffect(() => {
     try {
-      if (id.length <= 2) {
-        console.log(id.length);
-        const fetchdata = async () => {
-          const response = await axios.get(
-            `https://fakestoreapi.com/products/${id}`
-          );
-          setItem(response.data);
-          console.log(item)
-
-          console.log(response.data);
-        };
-        fetchdata();
-      } else {
         setItem(null)
        const  filtered=fireBaseItems.filter((item)=>item.id ===id)
        const ObjectFiltered=filtered[0];
        setItem(ObjectFiltered)
-      }
     } catch (error) {
       console.log(error);
     }
@@ -80,7 +66,7 @@ function ViewProduct() {
         <img
           src={item?.image}
           alt={item?.title}
-          className="h-60 w-52 lg:h-96 lg:w-full"
+          className=" lg:h-96 lg:w-full"
         />
       </div>
       <div className="text-left">

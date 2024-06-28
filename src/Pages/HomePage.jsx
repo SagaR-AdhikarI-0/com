@@ -2,32 +2,34 @@ import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Description from "../Components/Description";
+import { motion, useAnimation } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+import Image from "../../src/Image/Men.webp";
+import Image1 from "../../src/Image/electronics.webp";
+import Image2 from "../../src/Image/Women.webp";
+import Image3 from "../../src/Image/gym.webp";
+import CoverImg from "../../src/Image/Cover.jpg";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 function HomePage() {
   let toggle = false;
   const [width, setWidth] = useState();
-  const [nextBg, setNextBg] = useState(
-    `url('https://img.freepik.com/free-photo/purchasing-shop-buying-selling-teade_53876-134043.jpg?t=st=1716355931~exp=1716359531~hmac=420da4c55c4a43e6034ae91d630d53662f0a51f2fa584cb6656020349a3d4e51&w=1800')`
-  );
+
+  const controls = useAnimation();
+  const [ref, inView] = useInView();
+
+  useEffect(() => {
+    if (inView) {
+      controls.start({ opacity: 1, y: 0 });
+    }
+  }, [controls, inView]);
 
   useEffect(() => {
     const screenLength = window.innerWidth;
-    setNextBg(screenLength);
   }, [width]);
-  const bg1 = `url('https://img.freepik.com/free-photo/purchasing-shop-buying-selling-teade_53876-134043.jpg?t=st=1716355931~exp=1716359531~hmac=420da4c55c4a43e6034ae91d630d53662f0a51f2fa584cb6656020349a3d4e51&w=1800')`;
-  const bg2 = `url('https://img.freepik.com/free-vector/flat-design-supermarket-youtube-thumbnail_23-2149414831.jpg?t=st=1716357435~exp=1716361035~hmac=0dfd1b99c8eff83128fb9f158160b0a6bd862e3ebe0421895df0fdea921eb9d6&w=2000')`;
-  function toggleBackground() {
-    if (toggle) {
-      toggle = false;
-      setNextBg(bg1);
-    } else {
-      setNextBg(bg2);
-      toggle = true;
-    }
-  }
-  setInterval(() => {
-    toggleBackground();
-  }, 5000);
+  // setInterval(() => {
+  //   toggleBackground();
+  // }, 5000);
 
   //for our Features and services
   const descItems = [
@@ -61,48 +63,74 @@ function HomePage() {
   ];
 
   return (
-    <div>
-      <div
-        className="lg:h-60 lg:w-full relative transition-transform transform-gpu"
-        style={{
-          backgroundImage: nextBg,
-          height: width < 600 ? "20vh" : "75vh",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "contain",
-        }}
+    <div className="">
+      <motion.div
+        key="HeroPic"
+        initial={{ opacity: 0, y: -100 }}
+        animate={{ opacity: 2, y: 0 }}
+        transition={{ duration: 1 }}
       >
-        {" "}
-      </div>
-
-      <div className="bg-slate-300 my-10  ">
-        <div className="text-left pt-10 pb-5 px-4">
-          <p className="text-blue-500"> View now</p>
-          <span className="font-bold text-2xl">Our Features and Services</span>
+        <div className="max-h-[700px]">
+          <img src={CoverImg} alt="" className="max-h-[700px] w-full" />{" "}
         </div>
-        <hr></hr>
-        <div className="lg:flex lg:justify-end">
+      </motion.div>
+
+      <div className=" my-4  ">
+        <div className=" py-6 text-black px-4">
+          <p className="text-blue-500">
+            {" "}
+            <Link to="/products">View now </Link>
+          </p>
+          <span className="font-extrabold text-6xl">New Arrivals</span>
+        </div>
+        <div className="lg:flex lg:justify-center gap-20 p-4">
           {descItems.map((item) => (
-            <div
-              className="border border-blue-100  lg:flex lg:justify-end lg:p-10 lg:gap-32 "
-              key={item.title}
-            >
-              <Description
-                title={item.title}
-                image={item.image}
-                text={item.text}
-              />
-            </div>
+            <Description
+              key={item.image}
+              title={item.title}
+              image={item.image}
+              text={item.text}
+            />
           ))}
         </div>
       </div>
-      <div className=" grid p-4 bg-slate-100">
-        <p>Trusted by 1000+ customers</p>
-        <h1 className="underline font-bold text-2xl">Our parteners</h1>
+      <div className="  lg:p-10 lg:m-10 m-4  ">
+        <div className="font-bold text-4xl lg:text-5xl  p-3 lg:p-8">
+        <span className="text-yellow-950">Elpore</span>    the Unlimited  <span className="text-blue-950">Products </span>
+        </div>
+        <div className="grid grid-cols-2  bg-[#f0efed]  ">
+          <div className="grid border-r-8 border-l border-t border-black border-b-8">        
+            <img src={Image} alt="" className=" rounded-lg  " />
+            <span></span>
+          </div>
+          <div className="grid  border-t-8  border-black border-r border-b ">
+            <img src={Image2} alt="" className=" rounded-lg " />
+          </div>
+        </div>
+      </div>
+      <div className="md:relative md:mt-40 ">
+        <div className=" grid md:px-60 bg-slate-800 md:mx-20 md:absolute left-20 md:top-[-110px] lg:rounded-lg py-2">
+          <p className="text-yellow-400">Trusted by 1000+ customers</p>
+          <h1 className="underline  text-5xl text-white">Our parteners</h1>
 
-        <div className="lg:flex lg:gap-20 gap-10 lg:justify-center  grid grid-cols-3 lg:p-8 border-slate-50 border-2 ">
-          {ourPartners.map((i) => (
-            <img src={i} className="lg:h-16 h-10 bg-blend-screen" key={i}></img>
-          ))}
+          <div className="lg:flex   lg:gap-20 gap-10 lg:justify-center  grid  grid-cols-2  lg:p-5   ">
+            {ourPartners.map((i) => (
+              <motion.div
+                key={i}
+                ref={ref}
+                animate={controls}
+                initial={{ opacity: 0, y: 30 }}
+                transition={{ duration: 1 }}
+                className="flex justify-center mt-4 lg:flex-none lg:m-0"
+              >
+                <img
+                  src={i}
+                  className="lg:h-14 rounded w-16 h-10 bg-blend-screen"
+                  key={i}
+                ></img>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

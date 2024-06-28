@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { addTocart } from "../../Features/Cart/cartSlice";
 
 import StarRating from "../Star";
 import { Link } from "react-router-dom";
 
-function Product({ title, src, discription, price, id }) {
+function SingleProduct({ title, src, price, id }) {
+  const dispatch = useDispatch();
   const [ishovered, setIsHovered] = useState();
   const handleAddToCart = () => {
     try {
@@ -13,55 +17,49 @@ function Product({ title, src, discription, price, id }) {
       if (!existingCartItemsId.includes(id)) {
         const updatedCartItemsId = [...existingCartItemsId, id];
         localStorage.setItem("cartItems", JSON.stringify(updatedCartItemsId));
+        toast.success("Added  Successfully");
+        console.log(updatedCartItemsId);
+        dispatch(addTocart(id));
       } else {
-        alert("Item already added to the  cart");
+        toast.error("Item already in teh  cart");
       }
-
-      console.log(updatedCartItemsId);
     } catch (error) {
       console.log(error);
     }
   };
 
-  //view Items
-
-  //
-
   return (
     <div
-      className={`grid place-content-center gap-2 max-w-[80%] transform-gpu transition-transform mx-auto p-2 min-w-[80%] my-4 bg-slate-100  shadow-2xl  ${
+      className={`grid place-content-center gap-2  overflow-hidden shadow-2xl border transform-gpu transition-transform mx-auto my-4    ${
         ishovered ? " scale-110" : ""
       }`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex place-content-center">
-        <img src={src} className="w-40 h-40" alt={title} />
+      <div className="flex ">
+        <Link to={`/products/${id}`}>
+          <img src={src} className="lg:w-72 h-36 md:h-60  lg:h-60 " alt={title} />
+        </Link>
       </div>
-      <div>
-        <h1 className="font-bold text-red-700"> {title}</h1>
-        <p>{discription}</p>
-        <h1 className="font-bold p-2"> Price:${price}</h1>
-        <h1 className="line-through"> ${price + 20}</h1>
-        <div className="flex justify-center">
-          <StarRating />
-        </div>
-      </div>
-      <div className="flex  w-full place-content-center gap-1">
-        <button className="bg-orange-600 hover:bg-green-600 p-3 lg:px-10  rounded-lg shadow-lg text-white  ">
-          {" "}
-          <Link  to={`/products/${id}`}>ViewItem </Link>
-        </button>
+      <div className="grid text-left gap-2 lg:px-3 px-2 py-3">
+        <span className="font-bold  text-xl max-w-56"> {title}</span>
 
-        <button
-          className="bg-slate-900 hover:bg-slate-600 rounded-lg shadow-lg p-3 lg:px-5 text-white"
-          onClick={() => handleAddToCart(id)}
-        >
-          Add to Cart
-        </button>
+        <StarRating />
+        <span className="text-blue-600 ">Free Delivery</span>
+        <span className="font-bold text-red-700 text-xl grid lg:block">
+          {" "}
+          <span>
+          Price:Rs.{price}{" "}
+          </span>
+          <span className="line-through text-sm lg:ml-5 text-[#7d7b7b]">
+            {" "}
+            Rs.{price + 20}
+          </span>{" "}
+        </span>
       </div>
     </div>
   );
 }
+const Product = memo(SingleProduct);
 
 export default Product;
